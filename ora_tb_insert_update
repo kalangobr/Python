@@ -1,0 +1,47 @@
+import cx_Oracle
+
+# Configuração de conexão com o Oracle
+username = "seu_usuario"
+password = "sua_senha"
+dsn = "seu_dsn"  # Formato: host:porta/nome_da_instancia
+
+try:
+    # Conectando ao banco de dados
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    cursor = connection.cursor()
+    print("Conexão realizada com sucesso.")
+
+    # Inserindo dados
+    def insert_data(id, nome, idade):
+        try:
+            query = """INSERT INTO tb01  (i, nome, idade) VALUES (:1, :2, :3)"""
+            cursor.execute(query, (id, nome, idade))
+            connection.commit()
+            print("Dados inseridos com sucesso.")
+        except cx_Oracle.DatabaseError as e:
+            print(f"Erro ao inserir dados: {e}")
+            connection.rollback()
+
+    # Atualizando dados
+    def update_data(id, novo_nome, nova_idade):
+        try:
+            query = """UPDATE sua_tabela SET nome = :1, idade = :2 WHERE id = :3"""
+            cursor.execute(query, (novo_nome, nova_idade, id))
+            connection.commit()
+            print("Dados atualizados com sucesso.")
+        except cx_Oracle.DatabaseError as e:
+            print(f"Erro ao atualizar dados: {e}")
+            connection.rollback()
+
+    # Exemplo de uso das funções
+    insert_data(1, "Maria", 30)
+    update_data(1, "Maria Clara", 31)
+
+except cx_Oracle.DatabaseError as e:
+    print(f"Erro ao conectar com o banco de dados: {e}")
+finally:
+    # Fechando a conexão
+    if cursor:
+        cursor.close()
+    if connection:
+        connection.close()
